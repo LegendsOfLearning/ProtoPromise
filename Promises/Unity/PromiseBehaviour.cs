@@ -66,6 +66,11 @@ namespace Proto.Promises
             Promise.Manager.HandleCompletes();
         }
 
+        private void LateUpdate()
+        {
+            Promise.Manager.HandleCompletes();
+        }
+
         // Optionally add extra HandleCompletes calls for LateUpdate, FixedUpdate, WaitForEndOfFrame, etc.
     }
 }
