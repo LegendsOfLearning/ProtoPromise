@@ -60,7 +60,7 @@ namespace Proto.Promises
                         AddRejectionToUnhandledStack((Internal.UnhandledExceptionInternal) _rejectedOrCanceledValueOrPrevious);
                     }
                     // Promise wasn't released.
-                    var exception = Internal.UnhandledExceptionException.GetOrCreate(UnreleasedObjectException.instance);
+                    var exception = Internal.UnhandledExceptionException.GetOrCreate(new UnreleasedObjectException("A Promise object was garbage collected that was not released. You must release all IRetainable objects that you have retained. Promise: " + ToString()));
                     SetStacktraceFromCreated(this, exception);
                     AddRejectionToUnhandledStack(exception);
                 }
@@ -344,7 +344,8 @@ namespace Proto.Promises
 #if CSHARP_7_3_OR_NEWER // Really C# 7.2, but this symbol is the closest Unity offers.
         private
 #endif
-        protected Promise() { }
+        protected Promise()
+        { }
 
         protected override Promise GetDuplicate()
         {
@@ -2365,7 +2366,7 @@ namespace Proto.Promises
                     if (_retainCounter > 0)
                     {
                         // Delegate wasn't released.
-                        var exception = UnhandledExceptionException.GetOrCreate(UnreleasedObjectException.instance);
+                        var exception = UnhandledExceptionException.GetOrCreate(new UnreleasedObjectException("An IPotentialCancelation of type <" + typeof(T) + "> object was garbage collected that was not released. You must release all IRetainable objects that you have retained."));
                         SetStacktraceFromCreated(this, exception);
                         AddRejectionToUnhandledStack(exception);
                     }
