@@ -100,6 +100,11 @@ namespace Proto.Promises
             /// </summary>
             public static IValueConverter ValueConverter { get { return _valueConverter; } set { _valueConverter = value; } }
 
+            /// <summary>
+            /// If this is not null, uncaught rejection get routed through this instead of being thrown.
+            /// </summary>
+            public static Action<UnhandledException> UncaughtRejectionHandler { get; set; }
+
             private sealed class DefaultValueConverter : IValueConverter
             {
                 bool IValueConverter.TryConvert<TOriginal, TConvert>(IValueContainer<TOriginal> valueContainer, out TConvert converted)

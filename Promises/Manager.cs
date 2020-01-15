@@ -14,7 +14,7 @@ namespace Proto.Promises
 
             /// <summary>
             /// Invokes callbacks for completed promises,
-            /// then throws all unhandled rejections as <see cref="AggregateException"/>.
+            /// then throws all unhandled rejections as <see cref="AggregateException"/> if <see cref="Config.UncaughtRejectionHandler"/> is null, or invokes it.
             /// <para/>Does nothing if completes are already being handled.
             /// </summary>
             public static void HandleCompletes()
@@ -34,7 +34,7 @@ namespace Proto.Promises
             /// <summary>
             /// Invokes callbacks for completed promises,
             /// then invokes progress callbacks for all promises that had their progress updated,
-            /// then throws all unhandled rejections as <see cref="AggregateException"/>.
+            /// then throws all unhandled rejections as <see cref="AggregateException"/> if <see cref="Config.UncaughtRejectionHandler"/> is null, or invokes it.
             /// <para/>Does not handle completes if completes are already being handled. Does not handle progress if progress is already being handled or if progress is disabled.
             /// </summary>
             public static void HandleCompletesAndProgress()
@@ -54,7 +54,7 @@ namespace Proto.Promises
 
             /// <summary>
             /// Invokes progress callbacks for all promises that had their progress updated,
-            /// then throws all unhandled rejections as <see cref="AggregateException"/>.
+            /// then throws all unhandled rejections as <see cref="AggregateException"/> if <see cref="Config.UncaughtRejectionHandler"/> is null, or invokes it.
             /// <para/>Does nothing if progress is already being handled or if progress is disabled.
             /// </summary>
             public static void HandleProgress()
@@ -114,6 +114,19 @@ namespace Proto.Promises
 
                 var unhandledExceptions = _unhandledExceptions;
                 _unhandledExceptions.Clear();
+                if (Config.UncaughtRejectionHandler != null)
+                {
+                    // Reset handled flag.
+                    foreach (Internal.UnhandledExceptionInternal unhandled in unhandledExceptions)
+                    {
+                        unhandled.handled = false;
+                        // Allow to re-use.
+                        unhandled.Release();
+                        Config.UncaughtRejectionHandler.Invoke(unhandled);
+                    }
+                    return;
+                }
+
                 // Reset handled flag.
                 foreach (Internal.UnhandledExceptionInternal unhandled in unhandledExceptions)
                 {
