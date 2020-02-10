@@ -1,14 +1,21 @@
 ﻿#if PROTO_PROMISE_DEBUG_ENABLE || (!PROTO_PROMISE_DEBUG_DISABLE && DEBUG)
 #define PROMISE_DEBUG
+#else
+#undef PROMISE_DEBUG
 #endif
 #if !PROTO_PROMISE_CANCEL_DISABLE
 #define PROMISE_CANCEL
+#else
+#undef PROMISE_CANCEL
 #endif
 #if !PROTO_PROMISE_PROGRESS_DISABLE
 #define PROMISE_PROGRESS
+#else
+#undef PROMISE_PROGRESS
 #endif
 
 #pragma warning disable CS0672 // Member overrides obsolete member
+#pragma warning disable CS0618 // Type or member is obsolete
 
 using System;
 
@@ -35,17 +42,12 @@ namespace Proto.Promises
 
             ~DeferredBase()
             {
-#if UNITY_EDITOR
-                if (UnityEditor.EditorApplication.isPlaying) // Don't check if we're not in play mode.
-#endif
+                if (State == State.Pending)
                 {
-                    if (State == State.Pending)
-                    {
-                        // Deferred wasn't handled.
-                        var exception = Internal.UnhandledExceptionException.GetOrCreate(UnhandledDeferredException.instance);
-                        SetStacktraceFromCreated(Promise, exception);
-                        AddRejectionToUnhandledStack(exception);
-                    }
+                    // Deferred wasn't handled.
+                    var exception = Internal.UnhandledExceptionException.GetOrCreate(UnhandledDeferredException.instance);
+                    SetStacktraceFromCreated(Promise, exception);
+                    AddRejectionToUnhandledStack(exception);
                 }
             }
 
@@ -68,12 +70,6 @@ namespace Proto.Promises
             }
 
             /// <summary>
-            /// Reject the linked <see cref="Promise"/> without a reason.
-            /// <para/>NOTE: It is recommended to always reject with a reason!
-            /// </summary>
-            public abstract void Reject();
-
-            /// <summary>
             /// Reject the linked <see cref="Promise"/> with <paramref name="reason"/>.
             /// </summary>
             public abstract void Reject<TReject>(TReject reason);
@@ -88,7 +84,7 @@ namespace Proto.Promises
             public abstract void ReportProgress(float progress);
 
             /// <summary>
-            /// Cancels the promise and all promises that have been chained from it without a reason.
+            /// Cancel the linked <see cref="Promise"/> and all promises that have been chained from it without a reason.
             /// </summary>
 #if !PROMISE_CANCEL
             [Obsolete("Cancelations are disabled. Remove PROTO_PROMISE_CANCEL_DISABLE from your compiler symbols to enable cancelations.", true)]
@@ -112,7 +108,7 @@ namespace Proto.Promises
             }
 
             /// <summary>
-            /// Cancels the promise and all promises that have been chained from it with the provided cancel reason.
+            /// Cancel the linked <see cref="Promise"/> and all promises that have been chained from it with <paramref name="reason"/>.
             /// </summary>
 #if !PROMISE_CANCEL
             [Obsolete("Cancelations are disabled. Remove PROTO_PROMISE_CANCEL_DISABLE from your compiler symbols to enable cancelations.", true)]
@@ -173,11 +169,7 @@ namespace Proto.Promises
             /// <summary>
             /// Resolve the linked <see cref="Promise{T}"/> with <paramref name="value"/>.
             /// </summary>
-#if CSHARP_7_3_OR_NEWER // Really C# 7.2, but this symbol is the closest Unity offers.
-            public abstract void Resolve(in T value);
-#else
             public abstract void Resolve(T value);
-#endif
         }
     }
 
@@ -185,9 +177,9 @@ namespace Proto.Promises
     {
         partial class Internal
         {
-            public sealed class DeferredInternal : Deferred
+            public sealed class DeferredInternal0 : Deferred
             {
-                public DeferredInternal(Promise target)
+                public DeferredInternal0(Promise target)
                 {
                     Promise = target;
                 }
@@ -237,26 +229,6 @@ namespace Proto.Promises
                     }
                 }
 
-                public override void Reject()
-                {
-                    var promise = Promise;
-                    ValidateOperation(promise, 1);
-
-                    var rejection = CreateRejection(1);
-
-                    if (State == State.Pending)
-                    {
-                        State = State.Rejected;
-                        promise.RejectDirectIfNotCanceled(rejection);
-                        promise.ReleaseInternal();
-                    }
-                    else
-                    {
-                        AddRejectionToUnhandledStack(rejection);
-                        Logger.LogWarning("Deferred.Reject - Deferred is not in the pending state.");
-                    }
-                }
-
                 public override void Reject<TReject>(TReject reason)
                 {
                     var promise = Promise;
@@ -295,20 +267,9 @@ namespace Proto.Promises
                     }
                 }
             }
-        }
-    }
 
-    partial class Promise<T>
-    {
-        protected static new class Internal
-        {
-            public sealed class DeferredInternal : Deferred
+            public sealed class DeferredInternal<T> : Promise<T>.Deferred
             {
-                public DeferredInternal(Promise<T> target)
-                {
-                    Promise = target;
-                }
-
                 public void Reset()
                 {
                     State = State.Pending;
@@ -335,14 +296,14 @@ namespace Proto.Promises
 
                     promise.ReportProgress(progress);
                 }
-
-#if CSHARP_7_3_OR_NEWER // Really C# 7.2, but this symbol is the closest Unity offers.
-                public override void Resolve(in T value)
-#else
-                public override void Resolve(T value)
-#endif
+                public DeferredInternal(Promise<T> target)
                 {
-                    var promise = Promise;
+                    Promise = target;
+                }
+
+                public override void Resolve(T value)
+                {
+                    var promise = (PromiseInternal<T>) Promise;
                     ValidateOperation(promise, 1);
 
                     if (State == State.Pending)
@@ -355,26 +316,6 @@ namespace Proto.Promises
                     {
                         Logger.LogWarning("Deferred.Resolve - Deferred is not in the pending state.");
                         return;
-                    }
-                }
-
-                public override void Reject()
-                {
-                    var promise = Promise;
-                    ValidateOperation(promise, 1);
-
-                    var rejection = CreateRejection(1);
-
-                    if (State == State.Pending)
-                    {
-                        State = State.Rejected;
-                        promise.RejectDirectIfNotCanceled(rejection);
-                        promise.ReleaseInternal();
-                    }
-                    else
-                    {
-                        AddRejectionToUnhandledStack(rejection);
-                        Logger.LogWarning("Deferred.Reject - Deferred is not in the pending state.");
                     }
                 }
 
@@ -401,7 +342,7 @@ namespace Proto.Promises
                 public void RejectWithPromiseStacktrace(Exception exception)
                 {
                     var promise = Promise;
-                    var rejection = Promises.Promise.Internal.UnhandledExceptionException.GetOrCreate(exception);
+                    var rejection = UnhandledExceptionException.GetOrCreate(exception);
                     _SetStackTraceFromCreated(promise, rejection);
 
                     if (State == State.Pending)

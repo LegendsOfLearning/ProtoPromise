@@ -1,8 +1,12 @@
 ﻿#if !PROTO_PROMISE_CANCEL_DISABLE
 #define PROMISE_CANCEL
+#else
+#undef PROMISE_CANCEL
 #endif
 #if !PROTO_PROMISE_PROGRESS_DISABLE
 #define PROMISE_PROGRESS
+#else
+#undef PROMISE_PROGRESS
 #endif
 
 using System;
@@ -181,8 +185,10 @@ namespace Proto.Promises.Tests
             deferred1.Reject("Error!");
             deferred2.Reject("Error!");
 
-            // Only 1 rejection is caught, so expect an unhandled throw.
-            Assert.Throws<AggregateException>(Promise.Manager.HandleCompletes);
+            deferred1.Promise.Catch((string _) => { });
+            deferred2.Promise.Catch((string _) => { });
+
+            Promise.Manager.HandleCompletes();
 
             Assert.AreEqual(2, errors);
 
@@ -365,7 +371,7 @@ namespace Proto.Promises.Tests
 
 #if PROMISE_PROGRESS
         [Test]
-        public void AllProgressIsNormalized()
+        public void AllProgressIsNormalized0()
         {
             var deferred1 = Promise.NewDeferred();
             var deferred2 = Promise.NewDeferred();
@@ -409,6 +415,60 @@ namespace Proto.Promises.Tests
             Assert.AreEqual(7f / 8f, progress, TestHelper.progressEpsilon);
 
             deferred4.Resolve();
+            Promise.Manager.HandleCompletesAndProgress();
+            Assert.AreEqual(8f / 8f, progress, TestHelper.progressEpsilon);
+
+            // Clean up.
+            GC.Collect();
+            Promise.Manager.HandleCompletesAndProgress();
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [Test]
+        public void AllProgressIsNormalized1()
+        {
+            var deferred1 = Promise.NewDeferred<int>();
+            var deferred2 = Promise.NewDeferred<int>();
+            var deferred3 = Promise.NewDeferred<int>();
+            var deferred4 = Promise.NewDeferred<int>();
+
+            float progress = float.NaN;
+
+            Promise.All(deferred1.Promise, deferred2.Promise, deferred3.Promise, deferred4.Promise)
+                .Progress(p => progress = p);
+
+            Promise.Manager.HandleCompletesAndProgress();
+            Assert.AreEqual(0f, progress, 0f);
+
+            deferred1.ReportProgress(0.5f);
+            Promise.Manager.HandleCompletesAndProgress();
+            Assert.AreEqual(1f / 8f, progress, TestHelper.progressEpsilon);
+
+            deferred1.Resolve(1);
+            Promise.Manager.HandleCompletesAndProgress();
+            Assert.AreEqual(2f / 8f, progress, TestHelper.progressEpsilon);
+
+            deferred2.ReportProgress(0.5f);
+            Promise.Manager.HandleCompletesAndProgress();
+            Assert.AreEqual(3f / 8f, progress, TestHelper.progressEpsilon);
+
+            deferred2.Resolve(1);
+            Promise.Manager.HandleCompletesAndProgress();
+            Assert.AreEqual(4f / 8f, progress, TestHelper.progressEpsilon);
+
+            deferred3.ReportProgress(0.5f);
+            Promise.Manager.HandleCompletesAndProgress();
+            Assert.AreEqual(5f / 8f, progress, TestHelper.progressEpsilon);
+
+            deferred3.Resolve(1);
+            Promise.Manager.HandleCompletesAndProgress();
+            Assert.AreEqual(6f / 8f, progress, TestHelper.progressEpsilon);
+
+            deferred4.ReportProgress(0.5f);
+            Promise.Manager.HandleCompletesAndProgress();
+            Assert.AreEqual(7f / 8f, progress, TestHelper.progressEpsilon);
+
+            deferred4.Resolve(1);
             Promise.Manager.HandleCompletesAndProgress();
             Assert.AreEqual(8f / 8f, progress, TestHelper.progressEpsilon);
 
