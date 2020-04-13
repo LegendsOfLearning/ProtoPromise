@@ -82,8 +82,24 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed partial class AllPromise0 : PoolablePromise<AllPromise0>, IMultiTreeHandleable
+            public sealed partial class AllPromise0 : Promise, IMultiTreeHandleable
             {
+                static ValueLinkedStack<ITreeHandleable> _pool;
+
+                static AllPromise0()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
+                protected override void Dispose()
+                {
+                    base.Dispose();
+                    if (Config.ObjectPooling == PoolType.All)
+                    {
+                        _pool.Push(this);
+                    }
+                }
+
                 private ValueLinkedStack<PromisePassThrough> _passThroughs;
                 private uint _waitCount;
 

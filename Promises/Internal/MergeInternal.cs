@@ -31,8 +31,26 @@ namespace Proto.Promises
         partial class Internal
         {
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed partial class MergePromise<T> : PoolablePromise<T, MergePromise<T>>, IMultiTreeHandleable
+            public sealed partial class MergePromise<T> : Promise<T>, IMultiTreeHandleable
             {
+#pragma warning disable RECS0108 // Warns about static fields in generic types
+                static ValueLinkedStack<ITreeHandleable> _pool;
+#pragma warning restore RECS0108 // Warns about static fields in generic types
+
+                static MergePromise()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
+                protected override void Dispose()
+                {
+                    base.Dispose();
+                    if (Config.ObjectPooling == PoolType.All)
+                    {
+                        _pool.Push(this);
+                    }
+                }
+
                 private ValueLinkedStack<PromisePassThrough> _passThroughs;
                 Action<IValueContainer, ResolveContainer<T>, int> _onPromiseResolved;
                 private uint _waitCount;

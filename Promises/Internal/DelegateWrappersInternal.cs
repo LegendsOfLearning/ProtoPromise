@@ -2,6 +2,7 @@
 #pragma warning disable IDE0018 // Inline variable declaration
 #pragma warning disable IDE0034 // Simplify 'default' expression
 #pragma warning disable RECS0001 // Class is declared partial but has only one part
+#pragma warning disable CS0628 // New protected member declared in sealed class
 
 using System;
 using Proto.Utils;
@@ -119,8 +120,17 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DelegateVoidVoid : PoolableObject<DelegateVoidVoid>, IDelegateResolve, IDelegateReject, IDelegateResolvePromise, IDelegateRejectPromise
+            public sealed class DelegateVoidVoid : ILinked<DelegateVoidVoid>, IDelegateResolve, IDelegateReject, IDelegateResolvePromise, IDelegateRejectPromise
             {
+                DelegateVoidVoid ILinked<DelegateVoidVoid>.Next { get; set; }
+
+                protected static ValueLinkedStack<DelegateVoidVoid> _pool;
+
+                static DelegateVoidVoid()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 private Action _callback;
 
                 private DelegateVoidVoid() { }
@@ -171,8 +181,17 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DelegateArgVoid<TArg> : PoolableObject<DelegateArgVoid<TArg>>, IDelegateResolve, IDelegateReject, IDelegateResolvePromise, IDelegateRejectPromise
+            public sealed class DelegateArgVoid<TArg> : ILinked<DelegateArgVoid<TArg>>, IDelegateResolve, IDelegateReject, IDelegateResolvePromise, IDelegateRejectPromise
             {
+                DelegateArgVoid<TArg> ILinked<DelegateArgVoid<TArg>>.Next { get; set; }
+
+                protected static ValueLinkedStack<DelegateArgVoid<TArg>> _pool;
+
+                static DelegateArgVoid()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 private Action<TArg> _callback;
 
                 public static DelegateArgVoid<TArg> GetOrCreate(Action<TArg> callback)
@@ -237,8 +256,17 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DelegateVoidResult<TResult> : PoolableObject<DelegateVoidResult<TResult>>, IDelegateResolve, IDelegateReject, IDelegateResolvePromise, IDelegateRejectPromise
+            public sealed class DelegateVoidResult<TResult> : ILinked<DelegateVoidResult<TResult>>, IDelegateResolve, IDelegateReject, IDelegateResolvePromise, IDelegateRejectPromise
             {
+                DelegateVoidResult<TResult> ILinked<DelegateVoidResult<TResult>>.Next { get; set; }
+
+                protected static ValueLinkedStack<DelegateVoidResult<TResult>> _pool;
+
+                static DelegateVoidResult()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 private Func<TResult> _callback;
 
                 public static DelegateVoidResult<TResult> GetOrCreate(Func<TResult> callback)
@@ -289,8 +317,17 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DelegateArgResult<TArg, TResult> : PoolableObject<DelegateArgResult<TArg, TResult>>, IDelegateResolve, IDelegateReject, IDelegateResolvePromise, IDelegateRejectPromise
+            public sealed class DelegateArgResult<TArg, TResult> : ILinked<DelegateArgResult<TArg, TResult>>, IDelegateResolve, IDelegateReject, IDelegateResolvePromise, IDelegateRejectPromise
             {
+                DelegateArgResult<TArg, TResult> ILinked<DelegateArgResult<TArg, TResult>>.Next { get; set; }
+
+                protected static ValueLinkedStack<DelegateArgResult<TArg, TResult>> _pool;
+
+                static DelegateArgResult()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 private Func<TArg, TResult> _callback;
 
                 public static DelegateArgResult<TArg, TResult> GetOrCreate(Func<TArg, TResult> callback)
@@ -356,8 +393,17 @@ namespace Proto.Promises
 
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DelegateVoidPromise : PoolableObject<DelegateVoidPromise>, IDelegateResolvePromise, IDelegateRejectPromise
+            public sealed class DelegateVoidPromise : ILinked<DelegateVoidPromise>, IDelegateResolvePromise, IDelegateRejectPromise
             {
+                DelegateVoidPromise ILinked<DelegateVoidPromise>.Next { get; set; }
+
+                protected static ValueLinkedStack<DelegateVoidPromise> _pool;
+
+                static DelegateVoidPromise()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 private Func<Promise> _callback;
 
                 private DelegateVoidPromise() { }
@@ -397,8 +443,17 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DelegateArgPromise<TArg> : PoolableObject<DelegateArgPromise<TArg>>, IDelegateResolvePromise, IDelegateRejectPromise
+            public sealed class DelegateArgPromise<TArg> : ILinked<DelegateArgPromise<TArg>>, IDelegateResolvePromise, IDelegateRejectPromise
             {
+                DelegateArgPromise<TArg> ILinked<DelegateArgPromise<TArg>>.Next { get; set; }
+
+                protected static ValueLinkedStack<DelegateArgPromise<TArg>> _pool;
+
+                static DelegateArgPromise()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 private Func<TArg, Promise> _callback;
 
                 public static DelegateArgPromise<TArg> GetOrCreate(Func<TArg, Promise> callback)
@@ -447,8 +502,17 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DelegateVoidPromiseT<TPromise> : PoolableObject<DelegateVoidPromiseT<TPromise>>, IDelegateResolvePromise, IDelegateRejectPromise
+            public sealed class DelegateVoidPromiseT<TPromise> : ILinked<DelegateVoidPromiseT<TPromise>>, IDelegateResolvePromise, IDelegateRejectPromise
             {
+                DelegateVoidPromiseT<TPromise> ILinked<DelegateVoidPromiseT<TPromise>>.Next { get; set; }
+
+                protected static ValueLinkedStack<DelegateVoidPromiseT<TPromise>> _pool;
+
+                static DelegateVoidPromiseT()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 private Func<Promise<TPromise>> _callback;
 
                 public static DelegateVoidPromiseT<TPromise> GetOrCreate(Func<Promise<TPromise>> callback)
@@ -488,8 +552,17 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DelegateArgPromiseT<TArg, TPromise> : PoolableObject<DelegateArgPromiseT<TArg, TPromise>>, IDelegateResolvePromise, IDelegateRejectPromise
+            public sealed class DelegateArgPromiseT<TArg, TPromise> : ILinked<DelegateArgPromiseT<TArg, TPromise>>, IDelegateResolvePromise, IDelegateRejectPromise
             {
+                DelegateArgPromiseT<TArg, TPromise> ILinked<DelegateArgPromiseT<TArg, TPromise>>.Next { get; set; }
+
+                protected static ValueLinkedStack<DelegateArgPromiseT<TArg, TPromise>> _pool;
+
+                static DelegateArgPromiseT()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 private Func<TArg, Promise<TPromise>> _callback;
 
                 public static DelegateArgPromiseT<TArg, TPromise> GetOrCreate(Func<TArg, Promise<TPromise>> callback)
@@ -539,8 +612,17 @@ namespace Proto.Promises
 
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DelegateContinueVoidVoid : PoolableObject<DelegateContinueVoidVoid>, IDelegateContinue
+            public sealed class DelegateContinueVoidVoid : ILinked<DelegateContinueVoidVoid>, IDelegateContinue
             {
+                DelegateContinueVoidVoid ILinked<DelegateContinueVoidVoid>.Next { get; set; }
+
+                protected static ValueLinkedStack<DelegateContinueVoidVoid> _pool;
+
+                static DelegateContinueVoidVoid()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 private Action<ResultContainer> _callback;
 
                 public static DelegateContinueVoidVoid GetOrCreate(Action<ResultContainer> callback)
@@ -570,8 +652,17 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DelegateContinueVoidResult<TResult> : PoolableObject<DelegateContinueVoidResult<TResult>>, IDelegateContinue<TResult>
+            public sealed class DelegateContinueVoidResult<TResult> : ILinked<DelegateContinueVoidResult<TResult>>, IDelegateContinue<TResult>
             {
+                DelegateContinueVoidResult<TResult> ILinked<DelegateContinueVoidResult<TResult>>.Next { get; set; }
+
+                protected static ValueLinkedStack<DelegateContinueVoidResult<TResult>> _pool;
+
+                static DelegateContinueVoidResult()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 private Func<ResultContainer, TResult> _callback;
 
                 public static DelegateContinueVoidResult<TResult> GetOrCreate(Func<ResultContainer, TResult> callback)
@@ -601,8 +692,17 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DelegateContinueArgVoid<TArg> : PoolableObject<DelegateContinueArgVoid<TArg>>, IDelegateContinue
+            public sealed class DelegateContinueArgVoid<TArg> : ILinked<DelegateContinueArgVoid<TArg>>, IDelegateContinue
             {
+                DelegateContinueArgVoid<TArg> ILinked<DelegateContinueArgVoid<TArg>>.Next { get; set; }
+
+                protected static ValueLinkedStack<DelegateContinueArgVoid<TArg>> _pool;
+
+                static DelegateContinueArgVoid()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 private Action<Promise<TArg>.ResultContainer> _callback;
 
                 public static DelegateContinueArgVoid<TArg> GetOrCreate(Action<Promise<TArg>.ResultContainer> callback)
@@ -632,8 +732,17 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DelegateContinueArgResult<TArg, TResult> : PoolableObject<DelegateContinueArgResult<TArg, TResult>>, IDelegateContinue<TResult>
+            public sealed class DelegateContinueArgResult<TArg, TResult> : ILinked<DelegateContinueArgResult<TArg, TResult>>, IDelegateContinue<TResult>
             {
+                DelegateContinueArgResult<TArg, TResult> ILinked<DelegateContinueArgResult<TArg, TResult>>.Next { get; set; }
+
+                protected static ValueLinkedStack<DelegateContinueArgResult<TArg, TResult>> _pool;
+
+                static DelegateContinueArgResult()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 private Func<Promise<TArg>.ResultContainer, TResult> _callback;
 
                 public static DelegateContinueArgResult<TArg, TResult> GetOrCreate(Func<Promise<TArg>.ResultContainer, TResult> callback)
@@ -739,8 +848,17 @@ namespace Proto.Promises
 
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DelegateCaptureVoidVoid<TCapture> : PoolableObject<DelegateCaptureVoidVoid<TCapture>>, IDelegateResolve, IDelegateReject, IDelegateResolvePromise, IDelegateRejectPromise
+            public sealed class DelegateCaptureVoidVoid<TCapture> : ILinked<DelegateCaptureVoidVoid<TCapture>>, IDelegateResolve, IDelegateReject, IDelegateResolvePromise, IDelegateRejectPromise
             {
+                DelegateCaptureVoidVoid<TCapture> ILinked<DelegateCaptureVoidVoid<TCapture>>.Next { get; set; }
+
+                protected static ValueLinkedStack<DelegateCaptureVoidVoid<TCapture>> _pool;
+
+                static DelegateCaptureVoidVoid()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 private TCapture _capturedValue;
                 private Action<TCapture> _callback;
 
@@ -795,8 +913,17 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DelegateCaptureArgVoid<TCapture, TArg> : PoolableObject<DelegateCaptureArgVoid<TCapture, TArg>>, IDelegateResolve, IDelegateReject, IDelegateResolvePromise, IDelegateRejectPromise
+            public sealed class DelegateCaptureArgVoid<TCapture, TArg> : ILinked<DelegateCaptureArgVoid<TCapture, TArg>>, IDelegateResolve, IDelegateReject, IDelegateResolvePromise, IDelegateRejectPromise
             {
+                DelegateCaptureArgVoid<TCapture, TArg> ILinked<DelegateCaptureArgVoid<TCapture, TArg>>.Next { get; set; }
+
+                protected static ValueLinkedStack<DelegateCaptureArgVoid<TCapture, TArg>> _pool;
+
+                static DelegateCaptureArgVoid()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 private TCapture _capturedValue;
                 private Action<TCapture, TArg> _callback;
 
@@ -865,8 +992,17 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DelegateCaptureVoidResult<TCapture, TResult> : PoolableObject<DelegateCaptureVoidResult<TCapture, TResult>>, IDelegateResolve, IDelegateReject, IDelegateResolvePromise, IDelegateRejectPromise
+            public sealed class DelegateCaptureVoidResult<TCapture, TResult> : ILinked<DelegateCaptureVoidResult<TCapture, TResult>>, IDelegateResolve, IDelegateReject, IDelegateResolvePromise, IDelegateRejectPromise
             {
+                DelegateCaptureVoidResult<TCapture, TResult> ILinked<DelegateCaptureVoidResult<TCapture, TResult>>.Next { get; set; }
+
+                protected static ValueLinkedStack<DelegateCaptureVoidResult<TCapture, TResult>> _pool;
+
+                static DelegateCaptureVoidResult()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 private TCapture _capturedValue;
                 private Func<TCapture, TResult> _callback;
 
@@ -921,8 +1057,17 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DelegateCaptureArgResult<TCapture, TArg, TResult> : PoolableObject<DelegateCaptureArgResult<TCapture, TArg, TResult>>, IDelegateResolve, IDelegateReject, IDelegateResolvePromise, IDelegateRejectPromise
+            public sealed class DelegateCaptureArgResult<TCapture, TArg, TResult> : ILinked<DelegateCaptureArgResult<TCapture, TArg, TResult>>, IDelegateResolve, IDelegateReject, IDelegateResolvePromise, IDelegateRejectPromise
             {
+                DelegateCaptureArgResult<TCapture, TArg, TResult> ILinked<DelegateCaptureArgResult<TCapture, TArg, TResult>>.Next { get; set; }
+
+                protected static ValueLinkedStack<DelegateCaptureArgResult<TCapture, TArg, TResult>> _pool;
+
+                static DelegateCaptureArgResult()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 private TCapture _capturedValue;
                 private Func<TCapture, TArg, TResult> _callback;
 
@@ -992,8 +1137,17 @@ namespace Proto.Promises
 
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DelegateCaptureVoidPromise<TCapture> : PoolableObject<DelegateCaptureVoidPromise<TCapture>>, IDelegateResolvePromise, IDelegateRejectPromise
+            public sealed class DelegateCaptureVoidPromise<TCapture> : ILinked<DelegateCaptureVoidPromise<TCapture>>, IDelegateResolvePromise, IDelegateRejectPromise
             {
+                DelegateCaptureVoidPromise<TCapture> ILinked<DelegateCaptureVoidPromise<TCapture>>.Next { get; set; }
+
+                protected static ValueLinkedStack<DelegateCaptureVoidPromise<TCapture>> _pool;
+
+                static DelegateCaptureVoidPromise()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 private TCapture _capturedValue;
                 private Func<TCapture, Promise> _callback;
 
@@ -1037,8 +1191,17 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DelegateCaptureArgPromise<TCapture, TArg> : PoolableObject<DelegateCaptureArgPromise<TCapture, TArg>>, IDelegateResolvePromise, IDelegateRejectPromise
+            public sealed class DelegateCaptureArgPromise<TCapture, TArg> : ILinked<DelegateCaptureArgPromise<TCapture, TArg>>, IDelegateResolvePromise, IDelegateRejectPromise
             {
+                DelegateCaptureArgPromise<TCapture, TArg> ILinked<DelegateCaptureArgPromise<TCapture, TArg>>.Next { get; set; }
+
+                protected static ValueLinkedStack<DelegateCaptureArgPromise<TCapture, TArg>> _pool;
+
+                static DelegateCaptureArgPromise()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 private TCapture _capturedValue;
                 private Func<TCapture, TArg, Promise> _callback;
 
@@ -1091,8 +1254,17 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DelegateCaptureVoidPromiseT<TCapture, TPromise> : PoolableObject<DelegateCaptureVoidPromiseT<TCapture, TPromise>>, IDelegateResolvePromise, IDelegateRejectPromise
+            public sealed class DelegateCaptureVoidPromiseT<TCapture, TPromise> : ILinked<DelegateCaptureVoidPromiseT<TCapture, TPromise>>, IDelegateResolvePromise, IDelegateRejectPromise
             {
+                DelegateCaptureVoidPromiseT<TCapture, TPromise> ILinked<DelegateCaptureVoidPromiseT<TCapture, TPromise>>.Next { get; set; }
+
+                protected static ValueLinkedStack<DelegateCaptureVoidPromiseT<TCapture, TPromise>> _pool;
+
+                static DelegateCaptureVoidPromiseT()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 private TCapture _capturedValue;
                 private Func<TCapture, Promise<TPromise>> _callback;
 
@@ -1136,8 +1308,17 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DelegateCaptureArgPromiseT<TCapture, TArg, TPromise> : PoolableObject<DelegateCaptureArgPromiseT<TCapture, TArg, TPromise>>, IDelegateResolvePromise, IDelegateRejectPromise
+            public sealed class DelegateCaptureArgPromiseT<TCapture, TArg, TPromise> : ILinked<DelegateCaptureArgPromiseT<TCapture, TArg, TPromise>>, IDelegateResolvePromise, IDelegateRejectPromise
             {
+                DelegateCaptureArgPromiseT<TCapture, TArg, TPromise> ILinked<DelegateCaptureArgPromiseT<TCapture, TArg, TPromise>>.Next { get; set; }
+
+                protected static ValueLinkedStack<DelegateCaptureArgPromiseT<TCapture, TArg, TPromise>> _pool;
+
+                static DelegateCaptureArgPromiseT()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 private TCapture _capturedValue;
                 private Func<TCapture, TArg, Promise<TPromise>> _callback;
 
@@ -1191,8 +1372,17 @@ namespace Proto.Promises
 
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DelegateContinueCaptureVoidVoid<TCapture> : PoolableObject<DelegateContinueCaptureVoidVoid<TCapture>>, IDelegateContinue
+            public sealed class DelegateContinueCaptureVoidVoid<TCapture> : ILinked<DelegateContinueCaptureVoidVoid<TCapture>>, IDelegateContinue
             {
+                DelegateContinueCaptureVoidVoid<TCapture> ILinked<DelegateContinueCaptureVoidVoid<TCapture>>.Next { get; set; }
+
+                protected static ValueLinkedStack<DelegateContinueCaptureVoidVoid<TCapture>> _pool;
+
+                static DelegateContinueCaptureVoidVoid()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 private TCapture _capturedValue;
                 private Action<TCapture, ResultContainer> _callback;
 
@@ -1226,8 +1416,17 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DelegateContinueCaptureVoidResult<TCapture, TResult> : PoolableObject<DelegateContinueCaptureVoidResult<TCapture, TResult>>, IDelegateContinue<TResult>
+            public sealed class DelegateContinueCaptureVoidResult<TCapture, TResult> : ILinked<DelegateContinueCaptureVoidResult<TCapture, TResult>>, IDelegateContinue<TResult>
             {
+                DelegateContinueCaptureVoidResult<TCapture, TResult> ILinked<DelegateContinueCaptureVoidResult<TCapture, TResult>>.Next { get; set; }
+
+                protected static ValueLinkedStack<DelegateContinueCaptureVoidResult<TCapture, TResult>> _pool;
+
+                static DelegateContinueCaptureVoidResult()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 private TCapture _capturedValue;
                 private Func<TCapture, ResultContainer, TResult> _callback;
 
@@ -1261,8 +1460,17 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DelegateContinueCaptureArgVoid<TCapture, TArg> : PoolableObject<DelegateContinueCaptureArgVoid<TCapture, TArg>>, IDelegateContinue
+            public sealed class DelegateContinueCaptureArgVoid<TCapture, TArg> : ILinked<DelegateContinueCaptureArgVoid<TCapture, TArg>>, IDelegateContinue
             {
+                DelegateContinueCaptureArgVoid<TCapture, TArg> ILinked<DelegateContinueCaptureArgVoid<TCapture, TArg>>.Next { get; set; }
+
+                protected static ValueLinkedStack<DelegateContinueCaptureArgVoid<TCapture, TArg>> _pool;
+
+                static DelegateContinueCaptureArgVoid()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 private TCapture _capturedValue;
                 private Action<TCapture, Promise<TArg>.ResultContainer> _callback;
 
@@ -1296,8 +1504,17 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DelegateContinueCaptureArgResult<TCapture, TArg, TResult> : PoolableObject<DelegateContinueCaptureArgResult<TCapture, TArg, TResult>>, IDelegateContinue<TResult>
+            public sealed class DelegateContinueCaptureArgResult<TCapture, TArg, TResult> : ILinked<DelegateContinueCaptureArgResult<TCapture, TArg, TResult>>, IDelegateContinue<TResult>
             {
+                DelegateContinueCaptureArgResult<TCapture, TArg, TResult> ILinked<DelegateContinueCaptureArgResult<TCapture, TArg, TResult>>.Next { get; set; }
+
+                protected static ValueLinkedStack<DelegateContinueCaptureArgResult<TCapture, TArg, TResult>> _pool;
+
+                static DelegateContinueCaptureArgResult()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 private TCapture _capturedValue;
                 private Func<TCapture, Promise<TArg>.ResultContainer, TResult> _callback;
 

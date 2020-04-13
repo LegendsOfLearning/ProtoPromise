@@ -110,7 +110,7 @@ namespace Proto.Promises
                         return null;
                     }
                     List<StackTrace> stacktraces = new List<StackTrace>();
-                    for (CausalityTrace current = _next; current != null; current = current._next)
+                    for (CausalityTrace current = this; current != null; current = current._next)
                     {
                         stacktraces.Add(current._stacktrace);
                     }
@@ -130,10 +130,9 @@ namespace Proto.Promises
 
         static partial void SetCreatedStacktrace(Internal.ITraceable stacktraceable, int skipFrames)
         {
-            StackTrace stacktrace = Config.DebugCausalityTracer == TraceLevel.All
-                ? GetStackTrace(skipFrames + 1)
+            stacktraceable.Trace = Config.DebugCausalityTracer == TraceLevel.All
+                ? new Internal.CausalityTrace(GetStackTrace(skipFrames + 1), _currentTrace)
                 : null;
-            stacktraceable.Trace = new Internal.CausalityTrace(stacktrace, _currentTrace);
         }
 
         partial void SetCreatedAndRejectedStacktrace(Internal.IRejectionContainer unhandledException, bool generateStacktrace)

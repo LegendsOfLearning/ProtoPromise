@@ -10,6 +10,7 @@
 #pragma warning disable RECS0001 // Class is declared partial but has only one part
 #pragma warning disable IDE0041 // Use 'is null' check
 #pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable CS0628 // New protected member declared in sealed class
 
 using System;
 using Proto.Utils;
@@ -21,21 +22,17 @@ namespace Proto.Promises
         partial class Internal
         {
             [System.Diagnostics.DebuggerNonUserCode]
-            public abstract class PoolableObject<T> : ILinked<T> where T : PoolableObject<T>
+            public sealed class RejectionContainer<T> : ILinked<RejectionContainer<T>>, IRejectionContainer, IValueContainer<T>, IThrowable
             {
-                T ILinked<T>.Next { get; set; }
+                RejectionContainer<T> ILinked<RejectionContainer<T>>.Next { get; set; }
 
-                protected static ValueLinkedStack<T> _pool;
+                protected static ValueLinkedStack<RejectionContainer<T>> _pool;
 
-                static PoolableObject()
+                static RejectionContainer()
                 {
                     OnClearPool += () => _pool.Clear();
                 }
-            }
 
-            [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class RejectionContainer<T> : PoolableObject<RejectionContainer<T>>, IRejectionContainer, IValueContainer<T>, IThrowable
-            {
                 public T Value { get; private set; }
 
                 object IValueContainer.Value { get { return Value; } }
@@ -175,8 +172,17 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class CancelContainer<T> : PoolableObject<CancelContainer<T>>, IValueContainer, IValueContainer<T>, IThrowable
+            public sealed class CancelContainer<T> : ILinked<CancelContainer<T>>, IValueContainer, IValueContainer<T>, IThrowable
             {
+                CancelContainer<T> ILinked<CancelContainer<T>>.Next { get; set; }
+
+                protected static ValueLinkedStack<CancelContainer<T>> _pool;
+
+                static CancelContainer()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 public T Value { get; private set; }
                 private int _retainCounter;
 
@@ -284,8 +290,17 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class ResolveContainer<T> : PoolableObject<ResolveContainer<T>>, IValueContainer, IValueContainer<T>
+            public sealed class ResolveContainer<T> : ILinked<ResolveContainer<T>>, IValueContainer, IValueContainer<T>
             {
+                ResolveContainer<T> ILinked<ResolveContainer<T>>.Next { get; set; }
+
+                protected static ValueLinkedStack<ResolveContainer<T>> _pool;
+
+                static ResolveContainer()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
                 public T value;
                 private int _retainCounter;
 

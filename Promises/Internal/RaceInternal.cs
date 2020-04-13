@@ -56,8 +56,24 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed partial class RacePromise0 : PoolablePromise<RacePromise0>, IMultiTreeHandleable
+            public sealed partial class RacePromise0 : Promise, IMultiTreeHandleable
             {
+                static ValueLinkedStack<ITreeHandleable> _pool;
+
+                static RacePromise0()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
+                protected override void Dispose()
+                {
+                    base.Dispose();
+                    if (Config.ObjectPooling == PoolType.All)
+                    {
+                        _pool.Push(this);
+                    }
+                }
+
                 private ValueLinkedStack<PromisePassThrough> _passThroughs;
                 private uint _waitCount;
 
@@ -111,16 +127,29 @@ namespace Proto.Promises
                 {
                     _passThroughs.Push(passThrough);
                 }
+            }
+
+            [System.Diagnostics.DebuggerNonUserCode]
+            public sealed partial class RacePromise<T> : Promise<T>, IMultiTreeHandleable
+            {
+#pragma warning disable RECS0108 // Warns about static fields in generic types
+                static ValueLinkedStack<ITreeHandleable> _pool;
+#pragma warning restore RECS0108 // Warns about static fields in generic types
+
+                static RacePromise()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
 
                 protected override void Dispose()
                 {
                     base.Dispose();
+                    if (Config.ObjectPooling == PoolType.All)
+                    {
+                        _pool.Push(this);
+                    }
                 }
-            }
 
-            [System.Diagnostics.DebuggerNonUserCode]
-            public sealed partial class RacePromise<T> : PoolablePromise<T, RacePromise<T>>, IMultiTreeHandleable
-            {
                 private ValueLinkedStack<PromisePassThrough> _passThroughs;
                 private uint _waitCount;
 

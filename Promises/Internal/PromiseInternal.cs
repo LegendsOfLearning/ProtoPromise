@@ -597,11 +597,11 @@ namespace Proto.Promises
             internal static Action OnClearPool;
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public abstract class PoolablePromise<TPromise> : Promise where TPromise : PoolablePromise<TPromise>
+            public abstract partial class PromiseWaitPromise : Promise
             {
                 protected static ValueLinkedStack<ITreeHandleable> _pool;
 
-                static PoolablePromise()
+                static PromiseWaitPromise()
                 {
                     OnClearPool += () => _pool.Clear();
                 }
@@ -614,31 +614,7 @@ namespace Proto.Promises
                         _pool.Push(this);
                     }
                 }
-            }
 
-            [System.Diagnostics.DebuggerNonUserCode]
-            public abstract class PoolablePromise<T, TPromise> : Promise<T> where TPromise : PoolablePromise<T, TPromise>
-            {
-                protected static ValueLinkedStack<ITreeHandleable> _pool;
-
-                static PoolablePromise()
-                {
-                    OnClearPool += () => _pool.Clear();
-                }
-
-                protected override void Dispose()
-                {
-                    base.Dispose();
-                    if (Config.ObjectPooling == PoolType.All)
-                    {
-                        _pool.Push(this);
-                    }
-                }
-            }
-
-            [System.Diagnostics.DebuggerNonUserCode]
-            public abstract partial class PromiseWaitPromise<TPromise> : PoolablePromise<TPromise> where TPromise : PromiseWaitPromise<TPromise>
-            {
                 public void WaitFor(Promise other)
                 {
                     ValidateReturn(other);
@@ -664,8 +640,24 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public abstract partial class PromiseWaitPromise<T, TPromise> : PoolablePromise<T, TPromise> where TPromise : PromiseWaitPromise<T, TPromise>
+            public abstract partial class PromiseWaitPromise<T> : Promise<T>
             {
+                protected static ValueLinkedStack<ITreeHandleable> _pool;
+
+                static PromiseWaitPromise()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
+                protected override void Dispose()
+                {
+                    base.Dispose();
+                    if (Config.ObjectPooling == PoolType.All)
+                    {
+                        _pool.Push(this);
+                    }
+                }
+
                 public void WaitFor(Promise<T> other)
                 {
                     ValidateReturn(other);
@@ -691,8 +683,24 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed partial class DeferredPromise0 : PoolablePromise<DeferredPromise0>
+            public sealed partial class DeferredPromise0 : Promise
             {
+                static ValueLinkedStack<ITreeHandleable> _pool;
+
+                static DeferredPromise0()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
+                protected override void Dispose()
+                {
+                    base.Dispose();
+                    if (Config.ObjectPooling == PoolType.All)
+                    {
+                        _pool.Push(this);
+                    }
+                }
+
                 public readonly DeferredInternal0 deferred;
 
                 private DeferredPromise0()
@@ -718,8 +726,24 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed partial class DeferredPromise<T> : PoolablePromise<T, DeferredPromise<T>>
+            public sealed partial class DeferredPromise<T> : Promise<T>
             {
+                static ValueLinkedStack<ITreeHandleable> _pool;
+
+                static DeferredPromise()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
+                protected override void Dispose()
+                {
+                    base.Dispose();
+                    if (Config.ObjectPooling == PoolType.All)
+                    {
+                        _pool.Push(this);
+                    }
+                }
+
                 public readonly DeferredInternal<T> deferred;
 
                 private DeferredPromise()
@@ -764,8 +788,24 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class LitePromise0 : PoolablePromise<LitePromise0>
+            public sealed class LitePromise0 : Promise
             {
+                static ValueLinkedStack<ITreeHandleable> _pool;
+
+                static LitePromise0()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
+                protected override void Dispose()
+                {
+                    base.Dispose();
+                    if (Config.ObjectPooling == PoolType.All)
+                    {
+                        _pool.Push(this);
+                    }
+                }
+
                 private LitePromise0() { }
 
                 public static LitePromise0 GetOrCreate(int skipFrames)
@@ -792,8 +832,24 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class LitePromise<T> : PoolablePromise<T, LitePromise<T>>
+            public sealed class LitePromise<T> : Promise<T>
             {
+                static ValueLinkedStack<ITreeHandleable> _pool;
+
+                static LitePromise()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
+                protected override void Dispose()
+                {
+                    base.Dispose();
+                    if (Config.ObjectPooling == PoolType.All)
+                    {
+                        _pool.Push(this);
+                    }
+                }
+
                 private LitePromise() { }
 
                 public static LitePromise<T> GetOrCreate(int skipFrames)
@@ -824,8 +880,24 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DuplicatePromise0 : PoolablePromise<DuplicatePromise0>
+            public sealed class DuplicatePromise0 : Promise
             {
+                static ValueLinkedStack<ITreeHandleable> _pool;
+
+                static DuplicatePromise0()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
+                protected override void Dispose()
+                {
+                    base.Dispose();
+                    if (Config.ObjectPooling == PoolType.All)
+                    {
+                        _pool.Push(this);
+                    }
+                }
+
                 private DuplicatePromise0() { }
 
                 public static DuplicatePromise0 GetOrCreate(int skipFrames)
@@ -842,8 +914,24 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class DuplicatePromise<T> : PoolablePromise<T, DuplicatePromise<T>>
+            public sealed class DuplicatePromise<T> : Promise<T>
             {
+                static ValueLinkedStack<ITreeHandleable> _pool;
+
+                static DuplicatePromise()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
+                protected override void Dispose()
+                {
+                    base.Dispose();
+                    if (Config.ObjectPooling == PoolType.All)
+                    {
+                        _pool.Push(this);
+                    }
+                }
+
                 private DuplicatePromise() { }
 
                 public static DuplicatePromise<T> GetOrCreate(int skipFrames)
@@ -862,8 +950,24 @@ namespace Proto.Promises
 #region Resolve Promises
             // Individual types for more common .Then(onResolved) calls to be more efficient.
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class PromiseVoidResolve0 : PoolablePromise<PromiseVoidResolve0>
+            public sealed class PromiseVoidResolve0 : Promise
             {
+                static ValueLinkedStack<ITreeHandleable> _pool;
+
+                static PromiseVoidResolve0()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
+                protected override void Dispose()
+                {
+                    base.Dispose();
+                    if (Config.ObjectPooling == PoolType.All)
+                    {
+                        _pool.Push(this);
+                    }
+                }
+
                 private Action _onResolved;
 
                 private PromiseVoidResolve0() { }
@@ -900,8 +1004,24 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class PromiseArgResolve<TArg> : PoolablePromise<PromiseArgResolve<TArg>>
+            public sealed class PromiseArgResolve<TArg> : Promise
             {
+                static ValueLinkedStack<ITreeHandleable> _pool;
+
+                static PromiseArgResolve()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
+                protected override void Dispose()
+                {
+                    base.Dispose();
+                    if (Config.ObjectPooling == PoolType.All)
+                    {
+                        _pool.Push(this);
+                    }
+                }
+
                 private Action<TArg> _onResolved;
 
                 private PromiseArgResolve() { }
@@ -938,8 +1058,24 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class PromiseVoidResolve<TResult> : PoolablePromise<TResult, PromiseVoidResolve<TResult>>
+            public sealed class PromiseVoidResolve<TResult> : Promise<TResult>
             {
+                static ValueLinkedStack<ITreeHandleable> _pool;
+
+                static PromiseVoidResolve()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
+                protected override void Dispose()
+                {
+                    base.Dispose();
+                    if (Config.ObjectPooling == PoolType.All)
+                    {
+                        _pool.Push(this);
+                    }
+                }
+
                 private Func<TResult> _onResolved;
 
                 private PromiseVoidResolve() { }
@@ -976,8 +1112,24 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class PromiseArgResolve<TArg, TResult> : PoolablePromise<TResult, PromiseArgResolve<TArg, TResult>>
+            public sealed class PromiseArgResolve<TArg, TResult> : Promise<TResult>
             {
+                static ValueLinkedStack<ITreeHandleable> _pool;
+
+                static PromiseArgResolve()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
+                protected override void Dispose()
+                {
+                    base.Dispose();
+                    if (Config.ObjectPooling == PoolType.All)
+                    {
+                        _pool.Push(this);
+                    }
+                }
+
                 private Func<TArg, TResult> _onResolved;
 
                 private PromiseArgResolve() { }
@@ -1014,7 +1166,7 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class PromiseVoidResolvePromise0 : PromiseWaitPromise<PromiseVoidResolvePromise0>
+            public sealed class PromiseVoidResolvePromise0 : PromiseWaitPromise
             {
                 private Func<Promise> _onResolved;
 
@@ -1058,7 +1210,7 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class PromiseArgResolvePromise<TArg> : PromiseWaitPromise<PromiseArgResolvePromise<TArg>>
+            public sealed class PromiseArgResolvePromise<TArg> : PromiseWaitPromise
             {
                 private Func<TArg, Promise> _onResolved;
 
@@ -1102,7 +1254,7 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class PromiseVoidResolvePromise<TPromise> : PromiseWaitPromise<TPromise, PromiseVoidResolvePromise<TPromise>>
+            public sealed class PromiseVoidResolvePromise<TPromise> : PromiseWaitPromise<TPromise>
             {
                 private Func<Promise<TPromise>> _onResolved;
 
@@ -1146,7 +1298,7 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class PromiseArgResolvePromise<TArg, TPromise> : PromiseWaitPromise<TPromise, PromiseArgResolvePromise<TArg, TPromise>>
+            public sealed class PromiseArgResolvePromise<TArg, TPromise> : PromiseWaitPromise<TPromise>
             {
                 private Func<TArg, Promise<TPromise>> _onResolved;
 
@@ -1191,8 +1343,24 @@ namespace Proto.Promises
 
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class PromiseCaptureVoidResolve<TCapture> : PoolablePromise<PromiseCaptureVoidResolve<TCapture>>
+            public sealed class PromiseCaptureVoidResolve<TCapture> : Promise
             {
+                static ValueLinkedStack<ITreeHandleable> _pool;
+
+                static PromiseCaptureVoidResolve()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
+                protected override void Dispose()
+                {
+                    base.Dispose();
+                    if (Config.ObjectPooling == PoolType.All)
+                    {
+                        _pool.Push(this);
+                    }
+                }
+
                 private TCapture _capturedValue;
                 private Action<TCapture> resolveHandler;
 
@@ -1234,8 +1402,24 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class PromiseCaptureArgResolve<TCapture, TArg> : PoolablePromise<PromiseCaptureArgResolve<TCapture, TArg>>
+            public sealed class PromiseCaptureArgResolve<TCapture, TArg> : Promise
             {
+                static ValueLinkedStack<ITreeHandleable> _pool;
+
+                static PromiseCaptureArgResolve()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
+                protected override void Dispose()
+                {
+                    base.Dispose();
+                    if (Config.ObjectPooling == PoolType.All)
+                    {
+                        _pool.Push(this);
+                    }
+                }
+
                 private TCapture _capturedValue;
                 private Action<TCapture, TArg> _onResolved;
 
@@ -1277,8 +1461,24 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class PromiseCaptureVoidResolve<TCapture, TResult> : PoolablePromise<TResult, PromiseCaptureVoidResolve<TCapture, TResult>>
+            public sealed class PromiseCaptureVoidResolve<TCapture, TResult> : Promise<TResult>
             {
+                static ValueLinkedStack<ITreeHandleable> _pool;
+
+                static PromiseCaptureVoidResolve()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
+                protected override void Dispose()
+                {
+                    base.Dispose();
+                    if (Config.ObjectPooling == PoolType.All)
+                    {
+                        _pool.Push(this);
+                    }
+                }
+
                 private TCapture _capturedValue;
                 private Func<TCapture, TResult> _onResolved;
 
@@ -1320,8 +1520,24 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class PromiseCaptureArgResolve<TCapture, TArg, TResult> : PoolablePromise<TResult, PromiseCaptureArgResolve<TCapture, TArg, TResult>>
+            public sealed class PromiseCaptureArgResolve<TCapture, TArg, TResult> : Promise<TResult>
             {
+                static ValueLinkedStack<ITreeHandleable> _pool;
+
+                static PromiseCaptureArgResolve()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
+                protected override void Dispose()
+                {
+                    base.Dispose();
+                    if (Config.ObjectPooling == PoolType.All)
+                    {
+                        _pool.Push(this);
+                    }
+                }
+
                 private TCapture _capturedValue;
                 private Func<TCapture, TArg, TResult> _onResolved;
 
@@ -1363,7 +1579,7 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class PromiseCaptureVoidResolvePromise<TCapture> : PromiseWaitPromise<PromiseCaptureVoidResolvePromise<TCapture>>
+            public sealed class PromiseCaptureVoidResolvePromise<TCapture> : PromiseWaitPromise
             {
                 private TCapture _capturedValue;
                 private Func<TCapture, Promise> _onResolved;
@@ -1412,7 +1628,7 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class PromiseCaptureArgResolvePromise<TCapture, TArg> : PromiseWaitPromise<PromiseCaptureArgResolvePromise<TCapture, TArg>>
+            public sealed class PromiseCaptureArgResolvePromise<TCapture, TArg> : PromiseWaitPromise
             {
                 private TCapture _capturedValue;
                 private Func<TCapture, TArg, Promise> _onResolved;
@@ -1461,7 +1677,7 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class PromiseCaptureVoidResolvePromise<TCapture, TPromise> : PromiseWaitPromise<TPromise, PromiseCaptureVoidResolvePromise<TCapture, TPromise>>
+            public sealed class PromiseCaptureVoidResolvePromise<TCapture, TPromise> : PromiseWaitPromise<TPromise>
             {
                 private TCapture _capturedValue;
                 private Func<TCapture, Promise<TPromise>> _onResolved;
@@ -1510,7 +1726,7 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class PromiseCaptureArgResolvePromise<TCapture, TArg, TPromise> : PromiseWaitPromise<TPromise, PromiseCaptureArgResolvePromise<TCapture, TArg, TPromise>>
+            public sealed class PromiseCaptureArgResolvePromise<TCapture, TArg, TPromise> : PromiseWaitPromise<TPromise>
             {
                 private TCapture _capturedValue;
                 private Func<TCapture, TArg, Promise<TPromise>> _onResolved;
@@ -1563,8 +1779,24 @@ namespace Proto.Promises
             // IDelegate to reduce the amount of classes I would have to write to handle catches (Composition Over Inheritance).
             // I'm less concerned about performance for catches since exceptions are expensive anyway, and they are expected to be used less often than .Then(onResolved).
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class PromiseResolveReject0 : PoolablePromise<PromiseResolveReject0>
+            public sealed class PromiseResolveReject0 : Promise
             {
+                static ValueLinkedStack<ITreeHandleable> _pool;
+
+                static PromiseResolveReject0()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
+                protected override void Dispose()
+                {
+                    base.Dispose();
+                    if (Config.ObjectPooling == PoolType.All)
+                    {
+                        _pool.Push(this);
+                    }
+                }
+
                 private IDelegateResolve _onResolved;
                 private IDelegateReject _onRejected;
 
@@ -1612,8 +1844,24 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class PromiseResolveReject<T> : PoolablePromise<T, PromiseResolveReject<T>>
+            public sealed class PromiseResolveReject<T> : Promise<T>
             {
+                static ValueLinkedStack<ITreeHandleable> _pool;
+
+                static PromiseResolveReject()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
+                protected override void Dispose()
+                {
+                    base.Dispose();
+                    if (Config.ObjectPooling == PoolType.All)
+                    {
+                        _pool.Push(this);
+                    }
+                }
+
                 private IDelegateResolve _onResolved;
                 private IDelegateReject _onRejected;
 
@@ -1661,7 +1909,7 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class PromiseResolveRejectPromise0 : PromiseWaitPromise<PromiseResolveRejectPromise0>
+            public sealed class PromiseResolveRejectPromise0 : PromiseWaitPromise
             {
                 private IDelegateResolvePromise _onResolved;
                 private IDelegateRejectPromise _onRejected;
@@ -1720,7 +1968,7 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class PromiseResolveRejectPromise<TPromise> : PromiseWaitPromise<TPromise, PromiseResolveRejectPromise<TPromise>>
+            public sealed class PromiseResolveRejectPromise<TPromise> : PromiseWaitPromise<TPromise>
             {
                 private IDelegateResolvePromise _onResolved;
                 private IDelegateRejectPromise _onRejected;
@@ -1781,8 +2029,24 @@ namespace Proto.Promises
 
             #region Continue Promises
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class PromiseContinue0 : PoolablePromise<PromiseContinue0>
+            public sealed class PromiseContinue0 : Promise
             {
+                static ValueLinkedStack<ITreeHandleable> _pool;
+
+                static PromiseContinue0()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
+                protected override void Dispose()
+                {
+                    base.Dispose();
+                    if (Config.ObjectPooling == PoolType.All)
+                    {
+                        _pool.Push(this);
+                    }
+                }
+
                 private IDelegateContinue _onContinue;
 
                 private PromiseContinue0() { }
@@ -1811,8 +2075,24 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class PromiseContinue<T> : PoolablePromise<T, PromiseContinue<T>>
+            public sealed class PromiseContinue<T> : Promise<T>
             {
+                static ValueLinkedStack<ITreeHandleable> _pool;
+
+                static PromiseContinue()
+                {
+                    OnClearPool += () => _pool.Clear();
+                }
+
+                protected override void Dispose()
+                {
+                    base.Dispose();
+                    if (Config.ObjectPooling == PoolType.All)
+                    {
+                        _pool.Push(this);
+                    }
+                }
+
                 private IDelegateContinue<T> _onContinue;
 
                 private PromiseContinue() { }
@@ -1841,7 +2121,7 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class PromiseContinuePromise0 : PromiseWaitPromise<PromiseContinuePromise0>
+            public sealed class PromiseContinuePromise0 : PromiseWaitPromise
             {
                 private IDelegateContinue<Promise> _onContinue;
 
@@ -1878,7 +2158,7 @@ namespace Proto.Promises
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
-            public sealed class PromiseContinuePromise<TPromise> : PromiseWaitPromise<TPromise, PromiseContinuePromise<TPromise>>
+            public sealed class PromiseContinuePromise<TPromise> : PromiseWaitPromise<TPromise>
             {
                 private IDelegateContinue<Promise<TPromise>> _onContinue;
 
