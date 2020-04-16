@@ -1522,6 +1522,7 @@ namespace Proto.Promises
                 {
                     var del = _pool.IsNotEmpty ? _pool.Pop() : new DelegateContinueCaptureArgResult<TCapture, TArg, TResult>();
                     del._callback = callback;
+                    del._capturedValue = capturedValue;
                     return del;
                 }
 
